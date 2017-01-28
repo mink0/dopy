@@ -152,7 +152,7 @@ let envs = {
 
 function task(env) {
   let repo = env.config.remote.repo;
-  env.local('pwd; ls -a').then(() => env.remote(`git clone ${repo}`));
+  return env.local('pwd; ls -a').then(() => env.remote(`git clone ${repo}`));
 }
 
 dopy.run(task, dopy.config.initEnv('dev', envs));
