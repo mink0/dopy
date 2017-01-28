@@ -1,0 +1,30 @@
+{
+  "name": "dopy",
+  "version": "0.1.1",
+  "repository": "mink0/dopy",
+  "homepage": "https://github.com/mink0/dopy",
+  "description": "Deploy tool for nodejs applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "dp": "./dp.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "debug": "^2.3.3",
+    "execa": "^0.5.0",
+    "extend": "^3.0.0",
+    "glob": "^7.1.1",
+    "js-yaml": "^3.7.0",
+    "mustache": "^2.3.0",
+    "pad-stream": "^1.2.0",
+    "yargs": "^6.6.0"
+  },
+  "engines": {
+    "node": ">=4"
+  }
+}
