@@ -24,10 +24,10 @@ Yep, we deploy a lot.
   |   └─ ...
   |
   └─ tasks/
-        ├─ my-task1.js
-        └─ my-task2.js
-        └─ ...
-  ```
+      ├─ my-task1.js
+      └─ my-task2.js
+      └─ ...
+```
   You should have both `/envs` and `/tasks` directories.
 
   3. Add environment files to `/envs` dir:
@@ -200,12 +200,51 @@ production:
 ```
 
 Than add `targets` as command argument at your task file:
+
 `exports.command = 'taskname [targets]';`
 
 Or init it manually:
+
 `dopy.config.initTargets(argv.targets);`
 
-After that `env` instance will have `targets` property with array of targets. Each target is have `.remote` and `.local` methods for runnning commands. You are free to control the order and how command will be executed for each target.
+Then run it as:
+
+`dp <env> <your-task> target1[,target2][...,targetN]`
+
+You could select all targets with `ALL` argument:
+
+`dp <env> <your-task> ALL`
+
+After that `env` instance will have `targets` property with array of selected targets. Each target will have the `.remote` and `.local` methods for runnning commands. You are free to control how command will be executed for each target. And you are also may use `env.local`, `env.remote`
+to run nontargeted commands.
+
+For example:
+
+task.js
+
+```js
+exports.task = (env, argv, taskCb) => {
+  if (!env.targets) env.targets = [env];
+
+  function runInSeries(targetsCb) {
+    let tasks = [];
+
+    env.targets.forEach(t => tasks.push(cb => t.remote('npm install', cb)));
+
+    async.series(tasks, targetsCb);
+  }
+
+  function runInParallel(targetsCb) {
+    let tasks = [];
+
+    env.targets.forEach(t => tasks.push(cb => t.remote('git reset --hard', cb)));
+
+    async.parallel(tasks, targetsCb);
+  }
+
+  runInParallel(runInSeries(taskCb));
+}
+```
 
 ----------
 
