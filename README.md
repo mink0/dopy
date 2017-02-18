@@ -241,7 +241,7 @@ If set to `true` no output will be redirected to the console. You will get error
 
 .remote(command, [options](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback), [callback])
 ----
-Execute *command* on the remote servers ** in parallel ** through system's OpenSSH client. So you should install and setup `ssh` client first. It takes a *callback* or returns a promise. Returns error or array of results matching the order of servers set in configuration. If you want to use remote commands in your deploy task you should set `servers` in your configuration:
+Execute *command* on the remote servers **in parallel** through system's OpenSSH client. So you should install and setup `ssh` client first. It takes a *callback* or returns a promise. Returns error or array of results matching the order of servers set in configuration. If you want to use remote commands in your deploy task you should set `servers` in your configuration:
 
 ```yaml
 web:
@@ -254,6 +254,8 @@ web:
 ```
 NB: You could use some advanced bash scripting like this:
 `env.reomte('git describe --tags $(git rev-parse origin/master)'`
+
+NB: If you want to run the commands **in serial** (command will be run at the next server only when it will finish at the previous server) you could use: `env.ssh.execSeries`.
 
 All ssh-specific options are grouped in `options.ssh` object.
 
@@ -276,8 +278,6 @@ Selects a file from which the identity (private key) for public key authenticati
 ### ssh.cwd
 Specify current working dir for the remote command to run.
 
-NB: If you want to run the commands ** in serial ** (command will be run at the next server only when it will finish at the previous server) you could use: `env.ssh.execSeries`.
-env.ssh.
 -----------------------------------------------------
 
 .log(message, color)
