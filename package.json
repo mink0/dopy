@@ -1,6 +1,6 @@
 {
   "name": "dopy",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository": "mink0/dopy",
   "homepage": "https://github.com/mink0/dopy",
   "description": "Deploy tool for nodejs applications",
