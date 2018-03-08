@@ -1,120 +1,124 @@
 ## Dopy
-Yep, we deploy a lot.
+Code delivery tool
 
-### Keys fetures
-  * remote tasks by system's OpenSSH SSH client
-  * extensive bash completion support using [yargs](https://github.com/yargs/yargs)
-  * environment inheritance
-  * environment templating by [mustache](https://mustache.github.io/)
-  * multi server and multitarget environments support
-  * yaml environment templates
+
+### Key features
+* run shell commands locally and remotely
+* extensive bash completion support using [yargs](https://github.com/yargs/yargs)
+* remote tasks by [OpenSSH](https://www.openssh.com/)
+* simple yaml syntax for configuration
+* simple configuration inheritance
+* configuration templating by [mustache](https://mustache.github.io/)
+* multi-server and multi-target environment support
+* sync and async multi-server remote tasks
+
 
 ### Installation using *dopy-cli*
-  1. Install `dopy` globally: `npm -g install dopy`. You could run `dp` anywhere after that.
+1. Install `dopy` globally: `npm -g install dopy`. You could run `dp` anywhere after that.
 
-  2. Create directory structure:
+2. Create directory structure:
 
-  ```
-  deploy/
-  |
-  ├─ envs/
-  |   ├─ default.yml
-  |   ├─ dev.yml
-  |   └─ prod.yml
-  |   └─ ...
-  |
-  └─ tasks/
-      ├─ my-task1.js
-      └─ my-task2.js
-      └─ ...
 ```
-  You should have both `/envs` and `/tasks` directories.
+deploy/
+|
+├─ envs/
+|   ├─ default.yml
+|   ├─ dev.yml
+|   └─ prod.yml
+|   └─ ...
+|
+└─ tasks/
+    ├─ my-task1.js
+    └─ my-task2.js
+    └─ ...
+```
+You should have both `/envs` and `/tasks` directories.
 
-  3. Add environment files to `/envs` dir:
+3. Add environment files to `/envs` dir:
 
-    default.yml:
+  default.yml:
 
-    ```yaml
-    ---
-    web-app:
-      # root for `web-app` environment
+  ```yaml
+  ---
+  web-app:
+    # root for `web-app` environment
 
-      general:
-        # this will be merged to the remote and local section
-        repo: git@github.com:user/git.git
+    general:
+      # this will be merged to the remote and local section
+      repo: git@github.com:user/git.git
 
-      remote:
-        # settings for the commands that will be run remotely
-        log:
-          nginx: /var/log/nginx/nginx.log
-          app: '{{{ applog }}}/app.log'
+    remote:
+      # settings for the commands that will be run remotely
+      log:
+        nginx: /var/log/nginx/nginx.log
+        app: '{{{ applog }}}/app.log'
 
-      local:
-        # settings for the commands that will be run localy
-        path: /home/user/repo
-    ```
+    local:
+      # settings for the commands that will be run localy
+      path: /home/user/repo
+  ```
 
-    dev.yml:
+  dev.yml:
 
-    ```yaml
-    ---
-    parent: web-app # inherit all props from web-app
-    template:
-      applog: /home/app
-    development:
-      remote:
-        servers: alpha.domain.com
-    test:
-      remote:
-        servers: beta.domain.com
-    ```
+  ```yaml
+  ---
+  parent: web-app # inherit all props from web-app
+  template:
+    applog: /home/app
+  development:
+    remote:
+      servers: alpha.domain.com
+  test:
+    remote:
+      servers: beta.domain.com
+  ```
 
-    prod.yml:
+  prod.yml:
 
-    ```yaml
-    ---
-    parent: web-app # inherit all props from web-app
-    template:
-      applog: /var/log
-    production:
-      remote:
-        servers:
-          - user@prod-01.domain.com
-          - user@prod-02.domain.com
-    ```
+  ```yaml
+  ---
+  parent: web-app # inherit all props from web-app
+  template:
+    applog: /var/log
+  production:
+    remote:
+      servers:
+        - user@prod-01.domain.com
+        - user@prod-02.domain.com
+  ```
 
-  4. Add your tasks to `/tasks` dir. For example simple log task:
+4. Add your tasks to `/tasks` dir. For example simple log task:
 
-    log.js
+  log.js
 
-    ```js
-    exports.command = 'log [type]';
+  ```js
+  exports.command = 'log [type]';
 
-    exports.desc = 'Show logs at remote server';
+  exports.desc = 'Show logs at remote server';
 
-    exports.task = (env, argv) => {
-      let logs = env.config.remote.log;
+  exports.task = (env, argv) => {
+    let logs = env.config.remote.log;
 
-      if (!logs) return taskCb('no logs configured for ' + env.name);
+    if (!logs) return taskCb('no logs configured for ' + env.name);
 
-      let path = (typeof logs === 'object') ? logs[argv.type || 'app'] : logs;
+    let path = (typeof logs === 'object') ? logs[argv.type || 'app'] : logs;
 
-      return env.remote(`tail -n100 -f ${path}`, { verbose:true });
-    };
-    ```
-    Where:
-      - `env` is the object containing main `dopy` worker methods such as `.remote` and `.local`.
-      - `argv` parsed arguments
+    return env.remote(`tail -n100 -f ${path}`, { verbose:true });
+  };
+  ```
+  Where:
+    - `env` is the object containing main `dopy` worker methods such as `.remote` and `.local`.
+    - `argv` parsed arguments
 
-  5. Run `dp` from the root directory:
-    `dp development log`
-    `dp production log nginx`
+5. Run `dp` from the root directory:
+  `dp development log`
+  `dp production log nginx`
 
-    You could also specify root path with `--cwd` option and run:
-    `dp --cwd ~/deploy test log`
+  You could also specify root path with `--cwd` option and run:
+  `dp --cwd ~/deploy test log`
 
-    You could even make an alias in your `.bashrc` file:
-    `alias dp="dp --cwd ~/deploy"` and run `dp` with your tasks anywhere
+  You could even make an alias in your `.bashrc` file:
+  `alias dp="dp --cwd ~/deploy"` and run `dp` with your tasks anywhere
 
 
 ### Installation using *dopy api*
@@ -324,5 +328,5 @@ Specify current working dir for the remote command to run.
 Fancy print log messages to the console. Servers and targets will be properly prefixed using various colors for easy reading.
 
 ## To be continued...
-For more information you could check this deploy tasks: [deploy](https://github.com/mink0/deploy-by-dopy)
+For more information you could check this tasks: [deploy](https://github.com/mink0/deploy-by-dopy)
 
