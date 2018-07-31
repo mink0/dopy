@@ -1,19 +1,21 @@
-## Dopy
-Code delivery tool
+# Dopy
 
+Server tasks automation tool
 
-### Key features
-* run shell commands locally and remotely
-* extensive bash completion support using [yargs](https://github.com/yargs/yargs)
-* remote tasks by [OpenSSH](https://www.openssh.com/)
-* simple yaml syntax for configuration
-* simple configuration inheritance
-* configuration templating by [mustache](https://mustache.github.io/)
-* multi-server and multi-target environment support
-* sync and async multi-server remote tasks
+## Key features
 
+* execute local and remote shell commands with fancy output
+* extensive bash completion support (using [yargs](https://github.com/yargs/yargs))
+* commands execution using [execa](https://github.com/sindresorhus/execa)
+* remote commands execution is implemented by wrapping [OpenSSH](https://www.openssh.com/) SSH client
+* `yaml` files for configurations
+* configurations with templates (by [mustache](https://mustache.github.io/)
+) and inheritance
+* multi-server, multi-target tasks
+* parallel and serial multi-server tasks
 
-### Installation using *dopy-cli*
+## CLI installation
+
 1. Install `dopy` globally: `npm -g install dopy`. You could run `dp` anywhere after that.
 
 2. Create directory structure:
@@ -121,7 +123,8 @@ You should have both `/envs` and `/tasks` directories.
   `alias dp="dp --cwd ~/deploy"` and run `dp` with your tasks anywhere
 
 
-### Installation using *dopy api*
+## Api usage example
+
 1. Run `npm install dopy`
 
 2. Create a `.js` file:
@@ -170,16 +173,19 @@ function task(env) {
 dopy.run(task, dopy.config.initEnv('dev', envs));
 ```
 
-### Install bash completions
+### Bash completions
+
 See `dp completions` output and run `dp completions >> ~/.bashrc` or
 `dp completions >> ~/.bash_profile`.
 Open new terminal session.
 After that you will be able to use bash completions in your tasks.
 
 ### Debug
+
 Run `DEBUG=* dp ` to see verbose output from all running commands.
 
 ### Multitarget usage
+
 If you have multiple applications (deployable parts) installed on the same servers, you could use targets:
 
 /envs/production.yml:
@@ -252,7 +258,7 @@ exports.task = (env, argv, taskCb) => {
 
 ----------
 
-Methods of the env object
+Env object methods
 =======
 
 .local(command, [options](https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback), [callback])
@@ -262,6 +268,7 @@ Execute local *command* through the system shell using [execa](https://github.co
 Additional options are:
 ---
 #### prefix
+
 Type: object
 Default:
 
@@ -274,10 +281,12 @@ Default:
 ```
 
 #### verbose
+
 Default: `false`
 If set to `true` it will print the running command before execution
 
 #### mute
+
 Default: `false`
 If set to `true` no output will be redirected to the console. You will get error and the result object when command is finished.
 
@@ -305,28 +314,34 @@ All ssh-specific options are grouped in `options.ssh` object.
 Additional options are:
 ---
 #### ssh.user
+
 This user will be used to login to servers.
 
 ### ssh.interactive
+
 Default: `false`
 Ssh session will be spawn with `-tt` option for the interactive input.
 NB: Any command containing `sudo` will be set as interactive.
 
 ### ssh.port
+
 Ssh session will be spawn with `-p` option to specify port to connect to on the remote host.
 
 ### ssh.key
+
 Selects a file from which the identity (private key) for public key authentication is read.
 
 ### ssh.cwd
+
 Specify current working dir for the remote command to run.
 
 -----------------------------------------------------
 
 .log(message, color)
+
 ---
 Fancy print log messages to the console. Servers and targets will be properly prefixed using various colors for easy reading.
 
 ## To be continued...
-For more information you could check this tasks: [deploy](https://github.com/mink0/deploy-by-dopy)
 
+For real usage examples check this tasks: [deploy](https://github.com/mink0/deploy-by-dopy)
