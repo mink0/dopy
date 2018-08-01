@@ -2,6 +2,71 @@
 
 Server tasks automation tool
 
+## Goal
+
+You have:
+a) nodejs
+b) repetitive tasks that needed to be automated
+c) servers of different types where we want to apply this tasks
+
+For the begining we write the task:
+
+```js
+exports.task = (env, argv, cb) => {
+  let log = env.config.remote.log;
+
+  let cmd = `tail -n 100 -f ${log}`;
+
+  env.remote(cmd, { verbose:true }, cb);
+};
+```
+
+We want run this task on different servers. The server list is constantly changing, so we need a configuration file:
+
+```yaml
+---
+#  `web` environment
+web:
+  remote:
+    servers:
+      - web-1.yourdomain
+      - web-2.yourdomain
+      - web-3.yourdomain
+    log: /var/log/nginx/nginx.log
+
+#  `backend` environment
+backend:
+  remote:
+    servers:
+      - back-1.yourdomain
+      - back-2.yourdomain
+    log:
+      mysql: /var/log/mysql/mysql.log
+      app: /opt/app/log/application.log
+```
+
+Let's put this all together and run task via `dopy` cli:
+
+```$ dp web log```
+
+All web servers logs streaming together to the console output:
+
+```sh
+> web-1.yourdomain 'tail -n 100 -f /var/log/nginx/nginx.log'
+> web-2.yourdomain 'tail -n 100 -f /var/log/nginx/nginx.log'
+> web-3.yourdomain 'tail -n 100 -f /var/log/nginx/nginx.log'
+
+web-2.yourdomain     "id": 128,
+web-3.yourdomain     "HTTP GET /"
+...
+```
+
+Or if we need specific type of log:
+
+```$ dp backend log mysql```
+
+So lets add some sugar: bash completions, configuration tree, colors, ssh, etc..
+
 ## Key features
 
 * execute local and remote shell commands with fancy output
